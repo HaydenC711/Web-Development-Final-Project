@@ -1,1 +1,1 @@
-This is the final project for my web development class and represents a fictional mechanic shop titled 'A-town Repairs'. This website was created as a way to test skills in PHP, HTML, SQL, and Javascript and uses the model, format, and view files to make development easy.
+This is the final project for my web development class and represents a fictional mechanic shop titled 'A-town Repairs'. This website was created as a way to test skills in PHP, HTML, SQL, and Javascript and uses the model, view, controller framework to make development easy.
