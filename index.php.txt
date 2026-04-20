@@ -1,0 +1,139 @@
+<?php
+
+/*
+Controller
+
+This is the controller component. It acts as the main function and calls functions
+from the view file according to user requests.
+*/
+
+//error chaecking, app definition, and file inclusion
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+define('CourseSchedApp', 1);
+include 'format.php';
+include 'views.php';
+
+//If the user is logged in
+session_start();
+if (isset($_SESSION['uname'])) {
+	//If the action is form, build the form
+	if (isset($_GET['action']) && ($_GET['action'] == 'inventory')) {
+		$form = buildForm();
+		buildPage($form);
+	}
+	
+	else if (isset($_GET['action']) && $_GET['action'] == 'services') {
+		$page = buildServices();
+		buildPage($page);
+	}
+	
+	else if (isset($_GET['action']) && $_GET['action'] == 'contact') {
+		$page = buildContact();
+		buildPage($page);
+	}
+	
+	else if (isset($_GET['action']) && $_GET['action'] == 'modify') {
+		$page = buildModify();
+		buildPage($page);
+	}
+	
+	else if (isset($_GET['action']) && $_GET['action'] == 'logout') {
+		unset($_SESSION['uname']);
+		session_destroy();
+		$page = loginPage();
+		buildPage($page);
+		
+	}
+	//If action is table, build the table. POST requests from the form can be called here
+	else if (isset($_GET['action']) && ($_GET['action'] == 'table')) {
+		$records = array();
+		$results = array();
+		$records = createRec();
+		$results = filter($records);
+	
+		//If the next button is clicked update the page count and build the table for the next page
+		if (isset($_POST['pageB']) && $_POST['pageB'] == 'Next') {
+			$_POST['page'] = $_POST['page'] + 1;
+			$table = courseLimit($_POST['limit'], $_POST['page'], $results);
+			buildPage($table);
+		}
+		//If the previous button is clicked update the page count and build the table for the new page
+		else if (isset($_POST['pageB']) && $_POST['pageB'] == 'Previous') {
+			$_POST['page'] = $_POST['page'] - 1;
+			$table = courseLimit($_POST['limit'], $_POST['page'], $results);
+			buildPage($table);
+		}
+		//If limit is entered call the paging function. This initiates the paging system
+		else if ($_POST['limit'] > 0 && isset($_POST['page'])) {
+			$table = courseLimit($_POST['limit'], $_POST['page'], $results);
+			buildPage($table);
+		}
+		//Otherwise don't implement the paging system
+		else {	
+			$table = buildTable($results);
+			buildPage($table);
+		}
+	}
+	
+	//Allows the database to be modified differently depending on the submitted form on modify page
+	else if (isset($_GET['action']) && ($_GET['action'] == 'add')) {
+		inventoryInsert();
+		print("Record successfully added");
+		$page = buildModify();
+		buildPage($page);
+	}
+	else if (isset($_GET['action']) && ($_GET['action'] == 'remove')) {
+		inventoryRemove();
+		print("Record successfully removed");
+		$page = buildModify();
+		buildPage($page);
+	}
+	
+	else if (isset($_GET['action']) && ($_GET['action'] == 'edit')) {
+		inventoryModify();
+		print("Record successfully updated");
+		$page = buildModify();
+		buildPage($page);
+	}
+
+	//If the table or form view isn't called load the home page
+	else {
+		$home = homePageBody();
+		buildPage($home);
+	}
+}
+
+//If login action triggered build homepage
+else if (isset($_GET['action']) && $_GET['action'] == 'login') {
+	$uname = $_POST['uname'];
+	$pass = $_POST['pass'];
+	if (verifyUser($uname, $pass)) {
+		$_SESSION['uname'] = $uname;
+		$home = homePageBody();
+		buildPage($home);
+	}
+	else {
+		print("Login Failure: Account doesn't exist!");
+		$page = loginPage();
+		buildPage($page);
+		
+	}	
+}
+
+//Allow guest login
+else if (isset($_GET['action']) && $_GET['action'] == 'guest') {
+	$uname = 'guest';
+	$pass = 'guest';
+	if (verifyUser($uname, $pass)) {
+		$_SESSION['uname'] = $uname;
+		$home = homePageBody();
+		buildPage($home);
+	}
+}
+
+//otherwise build login page
+else{
+	$page = loginPage();
+	buildPage($page);
+}

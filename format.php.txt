@@ -1,0 +1,94 @@
+<?php 
+
+/*
+Format
+
+This module builds each web page through building the header, footer, and 
+contents separately. The header and footer are created here.
+
+*/
+
+//Prevents direct access to the module
+if (!defined('CourseSchedApp')) exit();
+
+//builds the current page of the webapp given an array of contents
+function buildPage($contents) 
+{
+	$page = array();
+	$page[] = "<html>\n";
+	$page[] = "<head>\n";
+	$page[] = implode(docHeader());
+	$page[] = "</head>\n";
+	$page[] = "<body>\n";
+  
+   // build the page header.
+   $page[] = "<table class='app' id='app'>\n";
+   $page[] = "<tr class='appheader'><td>\n";
+   $page[] = implode(pageHeader());
+   $page[] = "</td><tr/>\n";
+  
+   // build the page body.
+   $page[] = "<tr class='appbody'><td>\n";
+   $page[] = implode($contents);
+   $page[] = "<td><tr/>\n";
+   
+   // build the page footer.  
+   $page[] = "<tr class='appfooter'><td>\n";
+  	$page[] = implode(pageFooter());
+  	$page[] = "</td><tr/>\n";
+  
+  	$page[] = "</body>\n";
+  	$page[] = "</html>\n";
+  
+  	print(implode($page)); 
+}
+
+//Creates header
+function pageHeader()
+{
+	$script = file_get_contents('onclick.js');
+	$header = array();
+	$header[] = "<header>\n";
+	$header[] = "<audio hidden autoplay src='../final/lobby.mp3' id='lobby'></audio>\n";
+	$page[] = "<script>\n$script\n</script>\n";
+	$header[] = "<h1><img class='logo' src='logo-color-1.png' alt='Go Jackets!'> </h1>";
+	$header[] = "<nav>\n";
+	$header[] = "<ul class='nav'>";
+	$header[] = "<li><a class='navButton' onClick='homePageMusic()' href='index.php?action=home'>Home</a></li>";
+	$header[] = "<li><a class='navButton' href='index.php?action=inventory'>Inventory</a></li>"; //previously form
+	$header[] = "<li><a class='navButton' href='index.php?action=services'>Services</a></li>";
+	$header[] = "<li><a class='navButton' href='index.php?action=contact'>Contact Us</a></li>"; 
+	$header[] = "</ul>";
+	$header[] = "</nav>\n";
+	$header[] = "</header>\n";
+	
+	return $header; 
+}
+
+//Creates footer
+function pageFooter()
+{
+	$footer = array();
+	$footer[] = "<footer id='footer'>\n";
+	$footer[] = "<nav>\n";
+	$footer[] = "<ul class='nav'>";
+	$footer[] = "<li><a class='navButton' href='index.php?action=home'>Home</a></li>";
+	$footer[] = "<li><a class='navButton' href='index.php?action=inventory'>Inventory</a></li>";    //previously form
+	$footer[] = "<li><a class='navButton' href='index.php?action=services'>Services</a></li>"; 
+	$footer[] = "<li><a class='navButton' href='index.php?action=contact'>Contact Us</a></li>"; 
+	$footer[] = "<li><a class='navButtonLast' href='index.php?action=logout'>Log Out</a></li>";
+	$footer[] = "</ul>";
+	$footer[] = "</nav>\n";
+	$footer[] = "<h4>Web Application created by Jacob Willis, Kolby Gibson, and Hayden Campbell</h4>\n";
+	$footer[] = "</footer>\n";
+	return $footer;
+}
+//Creates the docHeader and inserts theme
+function docHeader()
+{
+	$header = array();
+	$header[] = "<title>Course Scheduling App</title>\n";
+	$header[] = "<link rel='stylesheet' href='apptheme.css'/>\n";
+	$header[] = "<link rel='stylesheet' href='style2.css'/>\n";
+	return $header; 
+}

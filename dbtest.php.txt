@@ -1,0 +1,29 @@
+<?php
+
+class MyDB extends SQLite3 {
+	//opens database
+	function __construct() {
+		$this->open('db.py');
+	}
+}
+//creates new
+$db = new MyDB();
+if(!$db) {
+	echo $db->lastErrorMsg();
+} 
+
+else {
+	echo "Opened database successfully\n";
+}
+
+$sql = <<<EOF
+      SELECT * FROM users;
+EOF;
+
+$ret = $db->query($sql);
+while($row = $ret->fetchArray(SQLITE3_ASSOC) ) {
+	echo "User = ". $row['username'] . "\n";
+	echo "Pass = ". $row['password'] ."\n";
+}
+echo "Operation done successfully\n";
+$db->close();
